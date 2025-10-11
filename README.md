@@ -178,7 +178,9 @@ One final note: I only encountered a single G1 Old Gen event, which caused a min
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=MeowIce/meowice-flags&type=Date)](https://www.star-history.com/#MeowIce/meowice-flags&Date)
 
 ### Sources
 - [Java Flags Benchmarked](https://github.com/brucethemoose/Minecraft-Performance-Flags-Benchmarks)
