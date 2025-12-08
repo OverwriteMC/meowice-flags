@@ -27,7 +27,7 @@ My flags are only compatible and tested with:
 # What is MeowIce's Flags ?
 MeowIce's Flags aimed to blend Aikar's Flags optimization with new JVM features to further boost the overall performance, while allowing it to use advanced CPU instructions to accelerate some workloads.
 > [!NOTE]
-> Hey don't forget to leave a star !
+> Hey, if you like it, consider leaving a star or donating (found at the end of this page) !
 > <img width="756" height="157" alt="image" src="https://github.com/user-attachments/assets/4db8d2e9-e2fa-448e-9a52-7af7a6c7369a" />
 
 # Why would I have to... switch ?
@@ -125,7 +125,7 @@ With MeowIce's flags and GraalVM:
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-## Another benchmark from user.
+## Another benchmark from user (USER UPLOAD)
 ### System specs
 - 10700K @ 5.00 GHz OC
 - RAM DDR4 96 GB @ 3000 MT/s
@@ -178,6 +178,14 @@ One final note: I only encountered a single G1 Old Gen event, which caused a min
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### Donate
+
+Hey ! If my JVM flags help your server, or if you want to contribute, consider donating to keep me motivated to improve them !  
+ETC: `0x7F4d0e0Ed6836C1558d6fEF43BB808CA2743D184`  
+BTC: `bc1p7azhpa6g5jlm0ujglfj8u88aeh2hhhdxuu675afcxsvjf7gh53psc7lj3j`  
+XMR: `48By4CMoPJr66b1tGgwbKXBMVZxqtPE1d1inyoGJGJM3SQSfwgTVoeQCPA9z8ioJHoeznuB2ntuNga8r1WNM1j3TSUYnSCr`  
+TON: `UQCYAO9xv3QNFbYkVq0G_bHMTXf-mIGyVec0T4DgMWd8cqKi`  
+
 ### Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=MeowIce/meowice-flags&type=Date)](https://www.star-history.com/#MeowIce/meowice-flags&Date)
