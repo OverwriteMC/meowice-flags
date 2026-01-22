@@ -1,21 +1,50 @@
 # Welcome !
-Hewwo there, I'm glad you are here ! This instruction will guide you to use MeowIce's Flags to make your Minecraft server run as it best ^^
+Hello there, I'm glad you are here ! This instruction will guide you to use MeowIce's Flags to make your Minecraft server run as it best !
+
+# What is MeowIce's Flags ?
+MeowIce's Flags is a high-performance JVM Startup Flag set designed to work with modern Minecraft and Java versions. These flags provide a significant performance uplift by taking advantage of the latest Java features and allowing the use of ZGC for better memory management.  
+MeowIce's flags are available on [Docker Minecraft Server](https://deepwiki.com/itzg/docker-minecraft-server/5.2-java-and-jvm-options#meowice-flags), [Birdflop Flags Generator](https://www.birdflop.com/resources/flags/), and soon [flags.sh](https://github.com/YouHaveTrouble/flags.sh/pull/1).  
+> [!NOTE]
+> Hey, if my flags helped your server, consider leaving a star or donating (found at the end of this page) !
+> <img width="756" height="157" alt="image" src="https://github.com/user-attachments/assets/4db8d2e9-e2fa-448e-9a52-7af7a6c7369a" />
+
 ## Compatibility
-My flags are only compatible and tested with:
+MeowIce's flags are compatible and tested with:
 - Java 24+,
 - GraalVM JVM,
 - Linux,
-- Minecraft 1.20+  
+- Minecraft 1.20+
+- x86_64 systems.
+> [!NOTE]
+> On ARM64 systems, you must manually remove these architecture specific args: `-XX:+UseFastStosb -XX:+UseXmmI2D -XX:+UseXmmI2F -XX:+UseXmmLoadAndClearUpper -XX:+UseXmmRegToRegMoveAll -XX:UseAVX=2`.
+> _[Source](https://github.com/itzg/docker-minecraft-server/pull/3498/commits/651c5b6b94262020d9fe5f605deb3698a98fc3dd)_
+
 > [!TIP]
-> Using MeowIce's Flags with [Leaf](https://github.com/Winds-Studio/Leaf) as server software can boost more performance !
-# TL;DR: The flags
-## G1GC version (for server below 32GB allocated heap)
+> Using MeowIce's Flags with [Leaf](https://github.com/Winds-Studio/Leaf) as server software can get more performance !
+# Why would I have to... switch ? 
+Most Minecraft servers use Aikar's flags, and it is highly recommended. Then why would I have to use this ?  
+
+In general, Aikar's flags were written for Java 8 era (2014 - 2018), when it was the only Java version we used. With Minecraft having progressed to version 1.21.x and soon Java 26 (at the time of writing this), most of Aikar's flags are obsolete or have been integrated to JVM itself. With that being said, there is no reason to only use Aikar's flags in 2026, and doing so is almost a placebo effect. "Almost" matters because his G1GC tuning is still has an effect in some specific cases.  
+
+MeowIce's flags integrate the existing Aikar's G1GC performance tuning, while utilizing the latest advanced performance tweaks from GraalVM and furthermore optimizes the memory management _(thanks ZGC)_ to enhance smooth Minecraft server experience.  
+MeowIce's flags are suitable for server admins who are looking to improve their server for large player base and high plugin count.  
+_See the [Comparions & Benchmarks](https://github.com/MeowIce/meowice-flags?tab=readme-ov-file#comparison--benchmark) section._
+
+# Why GraalVM but not others ?
+GraalVM with better JIT performance and more aggressive optimizations compared to traditional `HotSpot C2` found in many JDKs (including OpenJDK and AdoptiumJDK (aka. Eclipse Temurin)). This change makes inlining, loop unrolling, escape analysis, and vectorization work better while maintaining lower CPU usage.  
+Furthermore, the GraalVM compiler compiles plugins and server code faster and smarter, adapting to actual usage and environment on the fly.  
+> [!TIP]
+> GraalVM allows you to inspect memory usage and trace down naughty plugins using VisualVM !
+
+# The flags set
+## G1GC version (for servers below 32GB allocated heap)
 > [!NOTE]
 > This is recommended for servers allocated below 32GB RAM with basic resource usage. Balanced between memory usage and performance.
 
 `--add-modules=jdk.incubator.vector -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=28 -XX:G1MaxNewSizePercent=50 -XX:G1HeapRegionSize=16M -XX:G1ReservePercent=15 -XX:G1MixedGCCountTarget=3 -XX:InitiatingHeapOccupancyPercent=20 -XX:G1MixedGCLiveThresholdPercent=90 -XX:SurvivorRatio=32 -XX:G1HeapWastePercent=5 -XX:MaxTenuringThreshold=1 -XX:+PerfDisableSharedMem -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:+UseNUMA -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:NmethodSweepActivity=1 -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:AllocatePrefetchStyle=3 -XX:+AlwaysActAsServerClassMachine -XX:+UseTransparentHugePages -XX:LargePageSizeInBytes=2M -XX:+UseLargePages -XX:+EagerJVMCI -XX:+UseStringDeduplication -XX:+UseAES -XX:+UseAESIntrinsics -XX:+UseFMA -XX:+UseLoopPredicate -XX:+RangeCheckElimination -XX:+OptimizeStringConcat -XX:+UseCompressedOops -XX:+UseThreadPriorities -XX:+OmitStackTraceInFastThrow -XX:+RewriteBytecodes -XX:+RewriteFrequentPairs -XX:+UseFPUForSpilling -XX:+UseFastStosb -XX:+UseNewLongLShift -XX:+UseVectorCmov -XX:+UseXMMForArrayCopy -XX:+UseXmmI2D -XX:+UseXmmI2F -XX:+UseXmmLoadAndClearUpper -XX:+UseXmmRegToRegMoveAll -XX:+EliminateLocks -XX:+DoEscapeAnalysis -XX:+AlignVector -XX:+OptimizeFill -XX:+EnableVectorSupport -XX:+UseCharacterCompareIntrinsics -XX:+UseCopySignIntrinsic -XX:+UseVectorStubs -XX:UseAVX=2 -XX:UseSSE=4 -XX:+UseFastJNIAccessors -XX:+UseInlineCaches -XX:+SegmentedCodeCache -Djdk.nio.maxCachedBufferSize=262144 -Djdk.graal.UsePriorityInlining=true -Djdk.graal.Vectorization=true -Djdk.graal.OptDuplication=true -Djdk.graal.DetectInvertedLoopsAsCounted=true -Djdk.graal.LoopInversion=true -Djdk.graal.VectorizeHashes=true -Djdk.graal.EnterprisePartialUnroll=true -Djdk.graal.VectorizeSIMD=true -Djdk.graal.StripMineNonCountedLoops=true -Djdk.graal.SpeculativeGuardMovement=true -Djdk.graal.TuneInlinerExploration=1 -Djdk.graal.LoopRotation=true -Djdk.graal.CompilerConfiguration=enterprise
 `
-## ZGC version (for server with 32GB+ allocated heap)
+
+## ZGC version (for large servers with 32GB+ allocated heap)
 > [!NOTE]
 > This is recommended for servers with more than 32GB of allocated memory and many CPU cores, allowing for minimizing the delay between each GC run with a larger heap size in an intensive environment.
 
@@ -24,86 +53,7 @@ My flags are only compatible and tested with:
 
 `--add-modules=jdk.incubator.vector -XX:+UseZGC -XX:-ZProactive -XX:SoftMaxHeapSize=$((Memory - 2048))M -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:+PerfDisableSharedMem -XX:+UseNUMA -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:NmethodSweepActivity=1 -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:AllocatePrefetchStyle=1 -XX:+AlwaysActAsServerClassMachine -XX:+UseTransparentHugePages -XX:LargePageSizeInBytes=2M -XX:+UseLargePages -XX:+EagerJVMCI -XX:+UseStringDeduplication -XX:+UseAES -XX:+UseAESIntrinsics -XX:+UseFMA -XX:+UseLoopPredicate -XX:+RangeCheckElimination -XX:+OptimizeStringConcat -XX:+UseCompressedOops -XX:+UseThreadPriorities -XX:+OmitStackTraceInFastThrow -XX:+RewriteBytecodes -XX:+RewriteFrequentPairs -XX:+UseFPUForSpilling -XX:+UseFastStosb -XX:+UseNewLongLShift -XX:+UseVectorCmov -XX:+UseXMMForArrayCopy -XX:+UseXmmI2D -XX:+UseXmmI2F -XX:+UseXmmLoadAndClearUpper -XX:+UseXmmRegToRegMoveAll -XX:+EliminateLocks -XX:+DoEscapeAnalysis -XX:+AlignVector -XX:+OptimizeFill -XX:+EnableVectorSupport -XX:+UseCharacterCompareIntrinsics -XX:+UseCopySignIntrinsic -XX:+UseVectorStubs -XX:UseAVX=2 -XX:UseSSE=4 -XX:+UseFastJNIAccessors -XX:+UseInlineCaches -XX:+SegmentedCodeCache -Djdk.nio.maxCachedBufferSize=262144 -Djdk.graal.UsePriorityInlining=true -Djdk.graal.Vectorization=true -Djdk.graal.OptDuplication=true -Djdk.graal.DetectInvertedLoopsAsCounted=true -Djdk.graal.LoopInversion=true -Djdk.graal.VectorizeHashes=true -Djdk.graal.EnterprisePartialUnroll=true -Djdk.graal.VectorizeSIMD=true -Djdk.graal.StripMineNonCountedLoops=true -Djdk.graal.SpeculativeGuardMovement=true -Djdk.graal.TuneInlinerExploration=1 -Djdk.graal.LoopRotation=true -Djdk.graal.CompilerConfiguration=enterprise`
 
-# What is MeowIce's Flags ?
-MeowIce's Flags aimed to blend Aikar's Flags optimization with new JVM features to further boost the overall performance, while allowing it to use advanced CPU instructions to accelerate some workloads.
-> [!NOTE]
-> Hey, if you like it, consider leaving a star or donating (found at the end of this page) !
-> <img width="756" height="157" alt="image" src="https://github.com/user-attachments/assets/4db8d2e9-e2fa-448e-9a52-7af7a6c7369a" />
-
-# Why would I have to... switch ?
-Almost 99% of Minecraft servers use Aikar's Flags, and it is recommended by many people (some use nothing !). But why use other flags ?  
-The answer is: We have now developed to Minecraft 1.21.x and Java 24 (at the time of writing this), and Aikar's Flags **was written mainly to optimize Minecraft's Garbage Collector** and Java version at that time (Java 8 and Java 11, around 2018 - 2020). Later Java versions (from Java 17 and above) have added many optimization options for the JVM. So I wrote a separate flag to support these optimizations and integrate new features of Java 17+ while still keeping Aikar's flags mainly to optimize GC. <ins>There's no risk in trying my flags !</ins>
-# Why GraalVM but not AdoptiumJDK or OpenJDK ?
-GraalVM with better JIT performance and more aggressive optimizations compared to traditional `HotSpot C2` found in many JDKs (including OpenJDK and AdoptiumJDK (aka. Eclipse Temurin)). This change makes inlining, loop unrolling, escape analysis, and vectorization work better while maintaining lower CPU usage.  
-Furthermore, the GraalVM compiler compiles plugins and server code faster and smarter, adapting to actual usage and environment on the fly.  
-> [!TIP]
-> GraalVM allows you to inspect memory usage and trace down naughty plugins using VisualVM !
-
-# Flags explanation
-- `--add-modules=jdk.incubator.vector` Enables advanced vector computation capabilities for Pufferfish/Purpur 1.18+. Useful for optimizing chunk loading and rendering.
-- ` -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=28 -XX:G1MaxNewSizePercent=50 -XX:G1HeapRegionSize=16M -XX:G1ReservePercent=15 -XX:G1MixedGCCountTarget=3 -XX:InitiatingHeapOccupancyPercent=20 -XX:G1MixedGCLiveThresholdPercent=90 -XX:SurvivorRatio=32 -XX:G1HeapWastePercent=5 -XX:MaxTenuringThreshold=1 -XX:+PerfDisableSharedMem -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5 -XX:G1RSetUpdatingPauseTimePercent=0` These are very generic G1GC flags, based on [Aikar's Flags](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/).
-- `-XX:+UseNUMA` Enables NUMA or (Non Uniform Memory Access) for supported architecture.
-- `-XX:-DontCompileHugeMethods` Allows the JVM to compile larger methods to optimize performance.
-- `-XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000` Sets the maximum number of nodes for the compiler's intermediate representation.
-- `-XX:ReservedCodeCacheSize=400M` Sets the cache size for compiled codes. This will ensure the JIT have enough space for compiling.
-- `-XX:NonNMethodCodeHeapSize=12M` Sets the code heap size for non-method codes.
-- `-XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M` Same as above but for profiled and non profiled methods.
-- `-XX:NmethodSweepActivity=1` Helps managing code cache more efficiently by keeping "cold" code in the cache for a longer time. There is no risk of "filling up" the code cache either, as cold code is more aggressively removed as it fills up.
-## Advanced Performance Tuning
-- `-XX:+UseFastUnorderedTimeStamps` This option enables the usage of fast unordered timestamps for time-related operations in the JVM.
-- `-XX:+UseCriticalJavaThreadPriority` This option assigns a higher priority to critical Java threads, which can improve responsiveness and reduce latency in critical parts of the application.
-- `-XX:AllocatePrefetchStyle=3` This will instruct JVM to use code style 3 for faster memory allocation. A value of 3 enables the most aggressive prefetching. More aggressive prefetching is generally useful on newer CPUs with large caches.
-- `-XX:+AlwaysActAsServerClassMachine` Forces the JVM to act as if it's running on a server-class machine.
-- `-XX:+UseTransparentHugePages` As it name said.
-- `-XX:LargePageSizeInBytes=2M` Size of huge (large) pages.
-- `-XX:+UseLargePages` Enables the usage of large pages for the JVM's memory allocation. Large pages can improve performance by reducing Translation Lookaside Buffer misses.
-- `-XX:+EagerJVMCI` Enables the JVM Compiler Interface as early as needed, especially with GraalVM.
-- `-XX:+UseStringDeduplication` Reduces memory ussage by deduping identical strings. Might reduce frequent GCs.
-- `-XX:+UseAES -XX:+UseAESIntrinsics` Enables Hardware accelerated Advanced Encryption Standart intrinsics.
-- `-XX:+UseFMA` Enables Fused Multiply Add instructions.
-- `-XX:+UseLoopPredicate` Enables loop predicate optimization.
-- `-XX:+RangeCheckElimination` Enables the elimination of range checks.
-- `-XX:+OptimizeStringConcat` Enables optimization of string concatenation in the JVM, which can lead to improved performance when working with string concatenation operations.
-- `-XX:+UseCompressedOops` Enables the use of compressed object pointers (Oops) which reduces memory usage on 64-bit systems.
-- `-XX:+UseThreadPriorities` Enables the use of thread priorities.
-- `-XX:+OmitStackTraceInFastThrow` Omits the stack trace for exceptions that are frequently thrown.
-- `-XX:+RewriteBytecodes -XX:+RewriteFrequentPairs` Improves performance by actively rewriting byte codes and its pairs.
-- `-XX:+UseFPUForSpilling` Provides a faster temporary storage for spills, so when we need just a few additional spill slots, we can avoid tripping to L1 cache-backed stack for this.
-- `-XX:+UseFastStosb` Enables support for fast string operations.
-- `-XX:+UseNewLongLShift` Use optimized bitwise shift left.
-- `-XX:+UseVectorCmov` This option enables the usage of vectorized compare and move (cmov) instructions for better performance on CPUs that support these instructions.
-- `-XX:+UseXMMForArrayCopy -XX:+UseXmmI2D -XX:+UseXmmI2F -XX:+UseXmmRegToRegMoveAll` Uses XMM registers for Array Copy, int2double, int2float, register2register move operations
-- `-XX:+UseXmmLoadAndClearUpper` Same as above but to load and clear upper registers.
-- `-XX:+EliminateLocks` Improves single-threaded performance.
-- `-XX:+DoEscapeAnalysis` Escape analysis is a technique by which the Java Hotspot Server Compiler can analyze the scope of a new object's uses and decide whether to allocate it on the Java heap.
-- `-XX:+AlignVector` Aligns vectors for optimization.
-- `-XX:+OptimizeFill` Enables optimization of memory fill operations.
-- `-XX:+EnableVectorSupport` Its name suggested.
-- `-XX:+UseCharacterCompareIntrinsics` Enables intrinsification of java.lang.Character functions.
-- `-XX:+UseCopySignIntrinsic` Enables intrinsification of Math.copySign.
-- `-XX:+UseVectorStubs` Optimizes vector operations.
-- `-XX:UseAVX=2 -XX:UseSSE=4` Enable supported AVX, SSE instructions set on x86/x64 compatible CPUs.
-- `-XX:+UseFastJNIAccessors` Use optimized versions of GetField.
-- `-XX:+UseInlineCaches` Use Inline Caches for virtual calls
-- `-XX:+SegmentedCodeCache` Enables the segmented code cache, which improves code cache management.
-## GraalVM Compiler Specific Flags
-- `-Djdk.nio.maxCachedBufferSize=262144` Sets the maximum size for cached direct buffers.  
-- `-Djdk.graal.UsePriorityInlining=true` Enables priority inlining in the Graal compiler.  
-- `-Djdk.graal.Vectorization=true` Enables vectorization in the Graal compiler.  
-- `-Djdk.graal.OptDuplication=true` Enables optimization duplication in the Graal compiler.  
-- `-Djdk.graal.DetectInvertedLoopsAsCounted=true` Enables detection of inverted loops as counted loops.  
-- `-Djdk.graal.LoopInversion=true` Enables loop inversion in the Graal compiler.  
-- `-Djdk.graal.VectorizeHashes=true` Enables vectorization of hash computations.  
-- `-Djdk.graal.VectorizeSIMD=true` Enables SIMD (Single Instruction - Multiple Data) vectorization.  
-- `-Djdk.graal.StripMineNonCountedLoops=true` Enables strip mining of non-counted loops.  
-- `-Djdk.graal.SpeculativeGuardMovement=true` Enables speculative guard movement in the Graal compiler.  
-- `-Djdk.graal.TuneInlinerExploration=1` Tunes the inliner exploration parameter in the Graal compiler.  
-- `-Djdk.graal.LoopRotation=true` Enables loop rotation in the Graal compiler.  
-- `-Djdk.graal.UseCountedLoopSafepoints=true` Enables safepoint insertion in counted loops.  
-- `-Djdk.graal.EnterprisePartialUnroll=true` Enables partial unrolling optimizations in enterprise mode.  
-- `-Djdk.graal.CompilerConfiguration=enterprise` Enables Enterprise mode optimizations in the Graal compiler.
-
-# Comparison
+# Comparison & Benchmark
 I have made a comparison with one of my customers' servers.
 ## Spark
 Aikar's Flags and Adoptium JDK:
@@ -125,7 +75,7 @@ With MeowIce's flags and GraalVM:
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-## Another benchmark from user (USER UPLOAD)
+## Benchmark from user
 ### System specs
 - 10700K @ 5.00 GHz OC
 - RAM DDR4 96 GB @ 3000 MT/s
